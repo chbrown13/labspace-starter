@@ -8,6 +8,11 @@ browser, all within an isolated Docker container environment.
 The user has already cloned the labspace-starter template, which provides the basic repo scaffold
 (`labspace/`, `project/`, a GitHub Actions workflow). Your job is to author all the content.
 
+**Important: the `project/` directory IS the workspace root.** Files placed in `project/` in the
+content repo are mounted at `/home/coder/project/` in the workspace, which is the terminal's default
+working directory. Instructions must never tell users to `cd project` or reference paths prefixed
+with `project/` — they are already inside it.
+
 ## User's Request
 
 $ARGUMENTS
@@ -69,6 +74,11 @@ Generate every file below, creating or overwriting as needed. Do not modify the
 - `labspace/01-<section-name>.md`, `labspace/02-<section-name>.md`, etc. (one per section)
 - `compose.override.yaml`
 - Any files needed under `project/` (scripts, Dockerfiles, config files, sample apps, etc.)
+
+> **Workspace directory mapping:** `project/Dockerfile` in the repo → `/home/coder/project/Dockerfile`
+> in the workspace. The terminal opens at `/home/coder/project/` by default. Instructions should
+> reference files as `Dockerfile`, `src/app.js`, etc. — never as `project/Dockerfile` or
+> `~/project/Dockerfile`. Never instruct users to `cd project`.
 
 ---
 
@@ -363,6 +373,11 @@ graph TD
    starter files — a real Dockerfile, a real app, a real config — not empty placeholders or
    "fill this in" stubs.
 
+8. **Never reference the `project/` directory in instructions** — The `project/` directory in the
+   content repo is the workspace root. The terminal opens directly inside it. Never write `cd
+   project`, `ls project/`, or `project/Dockerfile` in instructions or commands. Write `ls`,
+   `Dockerfile`, `src/app.js`, etc. as if the user is already there (because they are).
+
 8. **Verify the environment first** — The first section should always include a simple command
    that confirms the environment is working correctly.
 
@@ -381,6 +396,7 @@ Before finishing, verify:
 - [ ] The workspace image matches the technology stack
 - [ ] For SDLC: the note about updating `.github/workflows/publish.yml` is communicated to the user
 - [ ] `project/` contains realistic starter files appropriate to the topic
+- [ ] No instruction or command references `project/` as a path prefix or tells the user to `cd project`
 
 ---
 
