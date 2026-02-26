@@ -14,3 +14,12 @@ sections:
     contentPath: .labspace/02-main-content.md
   - title: Conclusion
     contentPath: .labspace/03-conclusion.md
+
+# Services are used to add default tabs in the Labspace interface.
+# The IDE will always be present as a service, but you can add additional services as needed.
+# Icon values come from https://fonts.google.com/icons/
+services:
+  - id: app
+    url: http://localhost:3000
+    title: App
+    icon: anchor

@@ -14,13 +14,13 @@ This repository is intended to server as a template to help bootstrap a new Labs
 
     ```bash
     # On Mac/Linux
-    CONTENT_PATH=$PWD docker compose -f oci://dockersamples/labspace-content-dev -f .labspace/compose.override.yaml up
+    CONTENT_PATH=$PWD docker compose up --watch
 
     # On Windows with PowerShell
-    $Env:CONTENT_PATH = (Get-Location).Path; docker compose -f oci://dockersamples/labspace-content-dev -f .labspace/compose.override.yaml up
+    $Env:CONTENT_PATH = (Get-Location).Path; docker compose up --watch
     ```
 
-4. Update the `labspace.yaml` with your Labspace's title and description
+4. Update the `labspace/labspace.yaml` with your Labspace's title and description
 
 5. Write your Labspace! Being in dev mode, your changes should be visible in the interface without a restart. Feel free to edit either on your host machine or in the Labspace itself!
 
