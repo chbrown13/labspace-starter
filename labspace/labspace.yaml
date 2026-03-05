@@ -9,11 +9,11 @@ description: |
 
 sections:
   - title: Introduction
-    contentPath: .labspace/01-introduction.md
+    contentPath: 01-introduction.md
   - title: Main Content 1
-    contentPath: .labspace/02-main-content.md
+    contentPath: 02-main-content.md
   - title: Conclusion
-    contentPath: .labspace/03-conclusion.md
+    contentPath: 03-conclusion.md
 
 # Services are used to add default tabs in the Labspace interface.
 # The IDE will always be present as a service, but you can add additional services as needed.
