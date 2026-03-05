@@ -148,17 +148,23 @@ ports and do not need to be listed here.
 
 ### SDLC variant (Gitea + k3s + Traefik)
 
-For CI/CD or Kubernetes labs, use the SDLC variant. The `compose.override.yaml` is the same as a
-standard labspace — just change the workspace image if needed. The SDLC infrastructure is enabled
-by updating the GitHub Actions publish workflow (`.github/workflows/publish.yml`) to set:
+For CI/CD or Kubernetes labs, use the SDLC variant. In order to use it, the following changes need
+to occur:
 
-```yaml
-- name: Publish Labspace
-  uses: dockersamples/publish-labspace-action@v1
-  with:
-    labspace_base_version: latest-sdlc   # <-- add this line
-    target_repo: ${{ env.DOCKERHUB_REPO }}
-```
+- The `compose.yaml` needs to be updated to use the `oci://dockersamples/labspace-content-dev:latest-sdlc` base.
+
+- The SDLC infrastructure is enabled by updating the GitHub Actions publish workflow (`.github/workflows/publish.yml`) to set:
+
+    ```yaml
+    - name: Publish Labspace
+      uses: dockersamples/publish-labspace-action@v2
+      with:
+        labspace_base_version: latest-sdlc   # <-- add this line
+        target_repo: ${{ env.DOCKERHUB_REPO }}
+    ```
+
+The `compose.override.yaml` is the same as a standard labspace — just change the workspace image 
+if needed. 
 
 **SDLC pre-configured services:**
 
@@ -170,7 +176,8 @@ by updating the GitHub Actions publish workflow (`.github/workflows/publish.yml`
 | Deployed apps | `http://app.dockerlabs.xyz` | routed via Traefik |
 | Traefik dashboard | `http://localhost:8080` | — |
 
-**CI/CD secrets automatically available in `moby/demo-app`:**
+**CI/CD secrets automatically available in `moby/demo-app` (unless `SKIP_CI_SECRET_SETUP` is set to 
+`true` on the `workspace` service):**
 
 | Secret | Value |
 |--------|-------|
@@ -180,6 +187,10 @@ by updating the GitHub Actions publish workflow (`.github/workflows/publish.yml`
 | `DOCKERHUB_USERNAME` | from user's Docker Desktop |
 | `DOCKERHUB_PASSWORD` | from user's Docker Desktop |
 | `KUBECONFIG` | pre-generated k3s config |
+
+**Note:** If the `SKIP_CI_SECRET_SETUP` environment variable is set on the `workspace` service, all
+CI secret setup will be skipped. Ideally, this is set in the lab's own `compose.override.yaml` file.
+This is helpful in labs in which the student is going to setup the CI secrets themselves.
 
 The labspace project files are automatically committed to `moby/demo-app` at startup. If the project
 contains `.gitea/workflows/`, those workflows will automatically run after the initial push.
@@ -390,6 +401,12 @@ graph TD
 8. **Verify the environment first** — The first section should always include a simple command
    that confirms the environment is working correctly.
 
+9. **Never use `PORT` as an environment variable** — The workspace container already defines and
+   uses the `PORT` environment variable internally. If a sample app reads `PORT` from the
+   environment to choose its listening port, it will collide with the workspace's own port and
+   fail to start. Hard-code the port in the app (e.g., `const PORT = 3000`) or use a different
+   variable name (e.g., `APP_PORT`).
+
 9. **Use numbered steps for sequential exercises** — When students must perform a series of
    actions, use a numbered list with each code block indented (4 spaces) so it is nested inside
    its list item. This keeps the command visually tied to its step and makes progress easy to
@@ -440,6 +457,7 @@ Before finishing, verify:
 - [ ] For SDLC: the note about updating `.github/workflows/publish.yml` is communicated to the user
 - [ ] `project/` contains realistic starter files appropriate to the topic
 - [ ] No instruction or command references `project/` as a path prefix or tells the user to `cd project`
+- [ ] Sample app does not use `PORT` as an environment variable (the workspace container already owns it; hard-code the port or use a different variable name)
 - [ ] Every step that has users create or update a file clearly states the filename and intent (e.g. "Create a file named `compose.yaml` with the following contents:")
 
 ---
